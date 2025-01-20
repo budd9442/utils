@@ -1,15 +1,7 @@
 import asyncio
 from playwright.async_api import async_playwright
-
-names = [
-    "Amal", "Anura", "Buddhi", "Chathura", "Damith", "Dilhan", "Gayan", "Harsha", 
-    "Ishara", "Janaka", "Kamal", "Lalith", "Malith", "Nalin", "Nishan", "Pasan", 
-    "Ravindu", "Sachintha", "Sandun", "Supun", "Tharaka", "Udesh", "Vimukthi", 
-    "Yohan", "Ashan", "Dinuka", "Kasun", "Praveen", "Sahan", "Thusith", "Udara", 
-    "Chamath", "Chamal", "Charith", "Chaturanga", "Dinesh", "Hiran", "Ishan", 
-    "Janith", "Kalum", "Lakshan", "Mahesh", "Nuwan", "Pradeep", "Roshan", 
-    "Samitha", "Sanjeewa", "Suranga", "Vipul", "Wasana"
-]
+import time
+names = []
 
 
 
@@ -24,8 +16,7 @@ async def join_zoom_meeting(context, semaphore, name):
                 try:
                     # Wait for the Zoom page to load and for the iframe to appear
                     await page.goto(
-                        "https://app.zoom.us/wc/join/82414355348?fromPWA=1&pwd=FHFqtf4hacgdmHNMlLm1yzBn664aoq.1&_x_zm_rtaid=Bz-IuedRRvOQAVHQKMSuaQ.1736999124300.685eacf52bebf523c77adca26890647c&_x_zm_rhtaid=814",timeout=999999
-                    )
+                        "https://app.zoom.us/wc/94825910937/join?fromPWA=1&pwd=5FoFcEzbdYMthZ4PbtK6AfO7IXaMuY.1&_x_zm_rtaid=6HHFC_dcR8ysX7hgPT1AGA.1737028335642.c61bef5e9aaf116e5ba5e2018b7581d6&_x_zm_rhtaid=391"                      )
                     await page.wait_for_selector('iframe.pwa-webclient__iframe')
 
                     # Get the iframe element
@@ -39,7 +30,7 @@ async def join_zoom_meeting(context, semaphore, name):
                         print("Clicked 'Accept Cookies' button.")
 
                     # Wait for the name input field to appear inside the iframe
-                    await iframe.wait_for_selector('input#input-for-name')
+                    await iframe.wait_for_selector('input#input-for-name', timeout=9999999)
 
                     # Type "name" into the input field
                     name_input = await iframe.query_selector('input#input-for-name')
@@ -76,7 +67,9 @@ async def join_zoom_meeting(context, semaphore, name):
         except Exception as e:
             print(f"Error occurred: {e}")
 
-async def run_zoom_instances():
+async def run_zoom_instances(onebyone=False):
+    names = input("Enter names separated by comma : ").replace("\"","").split(",")
+    print(names)
     async with async_playwright() as p:
         # Launch the browser with default arguments
         browser = await p.chromium.launch(headless=False)
@@ -85,13 +78,20 @@ async def run_zoom_instances():
         semaphore = asyncio.Semaphore(50)
 
         tasks = []
+        j = 0
         for i in names:  # Number of Zoom instances to join
+            j+=1
+            time.sleep(1)
+            
             # Create a new browser context with microphone permissions
+            if(onebyone):
+                i = input("Enter name : ")
             context = await browser.new_context(
                 
                 permissions=["microphone"],  # Grant microphone permissions
                 viewport={"width": 480, "height": 360},  # Optional: Adjust viewport size
             )
+            await context.grant_permissions(["microphone"])  # Grant microphone permissions just in case
 
             # Add the task for joining a Zoom meeting
             tasks.append(asyncio.create_task(join_zoom_meeting(context, semaphore,i)))
@@ -104,4 +104,5 @@ async def run_zoom_instances():
 
 # Start the main loop
 if __name__ == "__main__":
+
     asyncio.run(run_zoom_instances())

@@ -16,7 +16,7 @@ async def join_zoom_meeting(context, semaphore, name):
                 try:
                     # Wait for the Zoom page to load and for the iframe to appear
                     await page.goto(
-                        "https://app.zoom.us/wc/94825910937/join?fromPWA=1&pwd=5FoFcEzbdYMthZ4PbtK6AfO7IXaMuY.1&_x_zm_rtaid=6HHFC_dcR8ysX7hgPT1AGA.1737028335642.c61bef5e9aaf116e5ba5e2018b7581d6&_x_zm_rhtaid=391"                      )
+                        "https://app.zoom.us/wc/91546907708/join?fromPWA=1&pwd=XEwyEF6RY1JFOLbkhmru1OlKm3bK5E.1&_x_zm_rtaid=eJYf_p3GTSOthIIXhcli6A.1738844471907.c7cd83bc8b7b76ac6be3795131de1122&_x_zm_rhtaid=714"                      )
                     await page.wait_for_selector('iframe.pwa-webclient__iframe')
 
                     # Get the iframe element
